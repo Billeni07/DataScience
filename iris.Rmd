@@ -51,7 +51,7 @@ corrplot(correlations, method = "circle")
 ```{r echo=FALSE, comment=NA}
 # create histograms for each attribute
 par(mfrow = c(1,4))
-for (i in 1:4){
+for (i in 1:4) {
   hist(iris[,i], main = names(iris)[i])
 }
 # create a layout of simpler density plots by attribute
