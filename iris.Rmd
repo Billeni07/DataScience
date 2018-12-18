@@ -44,40 +44,39 @@ skew <- apply(iris[,1:4],2,skewness)
 print(skew)
 correlations <- cor(iris[,1:4])
 print(correlations)
-corrplot(correlations, method="circle")
+corrplot(correlations, method = "circle")
 ```
 
 ### Basic Raw Data Graphical Analysis
 ```{r echo=FALSE, comment=NA}
 # create histograms for each attribute
-par(mfrow=c(1,4))
-for(i in 1:4) {
-  hist(iris[,i], main=names(iris)[i])
+par(mfrow = c(1,4))
+for (i in 1:4){
+  hist(iris[,i], main = names(iris)[i])
 }
 # create a layout of simpler density plots by attribute
-par(mfrow=c(1,4))
-for(i in 1:4) {
-  plot(density(iris[,i]), main=names(iris)[i])
+par(mfrow = c(1,4))
+for (i in 1:4) {
+  plot(density(iris[,i]), main = names(iris)[i])
 }
 # density plots for each attribute by class value
 x <- iris[,1:4]
 y <- iris[,5]
-scales <- list(x=list(relation="free"), y=list(relation="free"))
-featurePlot(x=x, y=y, plot="density", scales=scales)
+scales <- list(x = list(relation = "free"), y = list(relation = "free"))
+featurePlot(x = x, y = y, plot = "density", scales = scales)
 # Create separate boxplots for each attribute
-par(mfrow=c(1,4))
-for(i in 1:4) {
-  boxplot(iris[,i], main=names(iris)[i])
+par(mfrow = c(1,4))
+for (i in 1:4) {
+  boxplot(iris[,i], main = names(iris)[i])
 }
 # box and whisker plots for each attribute by class value
 x <- iris[,1:4]
 y <- iris[,5]
-featurePlot(x=x, y=y, plot="box")
+featurePlot(x = x, y = y, plot = "box")
 # pairwise plot
 pairs(iris)
 # pairwise scatter plots colored by class
-pairs(Species~., data=iris, col=iris$Species)
+pairs(Species~., data = iris, col = iris$Species)
 # calculate the pre-process parameters from the dataset
-preprocessParams <- preProcess(iris[,1:4], method=c("BoxCox"))
+preprocessParams <- preProcess(iris[,1:4], method = c("BoxCox"))
 ```
-
