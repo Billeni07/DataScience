@@ -24,26 +24,28 @@ library(stats)
 ### Snapshot of Header Data
 ```{r echo=FALSE, comment=NA}
 data("iris")
-head(iris)
+dataset <- iris
+head(dataset)
 ```
 ### Data Observations, Number of Variables, Classifications
 ```{r echo=FALSE, comment=NA}
-dim(iris)
-sapply(iris,class)
+dim(dataset)
+sapply(dataset,class)
+levels(dataset$Species)
 ```
 ### Standard Deviation for Continuous Variables
 ```{r echo=FALSE, comment=NA}
-sapply(iris[,1:4],sd)
+sapply(dataset[,1:4],sd)
 ```
 ### Basic Statistics
 ```{r echo=FALSE, comment=NA}
-summary(iris)
+summary(dataset)
 ```
 ### Skewness and Correlations
 ```{r echo=FALSE, comment=NA}
-skew <- apply(iris[,1:4],2,skewness)
+skew <- apply(dataset[,1:4],2,skewness)
 print(skew)
-correlations <- cor(iris[,1:4])
+correlations <- cor(dataset[,1:4])
 print(correlations)
 corrplot(correlations, method = "circle")
 ```
@@ -53,36 +55,75 @@ corrplot(correlations, method = "circle")
 # create histograms for each attribute
 par(mfrow = c(1,4))
 for (i in 1:4) {
-  hist(iris[,i], main = names(iris)[i])
+  hist(dataset[,i], main = names(dataset)[i])
 }
 # create a layout of simpler density plots by attribute
 par(mfrow = c(1,4))
 for (i in 1:4) {
-  plot(density(iris[,i]), main = names(iris)[i])
+  plot(density(dataset[,i]), main = names(dataset)[i])
 }
 # density plots for each attribute by class value
-x <- iris[,1:4]
-y <- iris[,5]
+x <- dataset[,1:4]
+y <- dataset[,5]
 scales <- list(x = list(relation = "free"), y = list(relation = "free"))
 featurePlot(x = x, y = y, plot = "density", scales = scales)
 # Create separate boxplots for each attribute
 par(mfrow = c(1,4))
 for (i in 1:4) {
-  boxplot(iris[,i], main = names(iris)[i])
+  boxplot(dataset[,i], main = names(dataset)[i])
 }
 # box and whisker plots for each attribute by class value
-x <- iris[,1:4]
-y <- iris[,5]
+x <- dataset[,1:4]
+y <- dataset[,5]
 featurePlot(x = x, y = y, plot = "box")
 # pairwise plot
-pairs(iris)
+pairs(dataset)
 # pairwise scatter plots colored by class
-pairs(Species~., data = iris, col = iris$Species)
+pairs(Species~., data = dataset, col = dataset$Species)
+# scatter plot matrix
+featurePlot(x = x, y = y, plot = "ellipse")
 ```
 
 ## Prediction
-### Preprocess Parameters
 ```{r echo=FALSE, comment=NA}
-# calculate the pre-process parameters from the dataset
-preprocessParams <- preProcess(iris[,1:4], method = c("BoxCox"))
+# create a validation dataset
+validationIndex <- createDataPartition(dataset$Species, p = 0.80, list = FALSE)
+validation <- dataset[-validationIndex,]  # select 20% of the data for validation
+dataset <- dataset[validationIndex,]  # select 80% of the data for training
+# generate a test harness running algorithms using 10-fold cross validation
+trainControl <- trainControl(method = "cv", number = 10)
+metric <- "Accuracy"  # ratio of number of correctly predicted instances divided by the total instances
+# 5 candidate models
+#   Linear Discriminant Analysis (LDA)
+#   Classification and Regression Trees (CART)
+#   k-Nearest Neighbors (KNN)
+#   Support Vector Machines (SVM) with a radial kernal
+#   Random Forest (RF)
+```
+
+### Models to Try:
+#### Linear Discriminant Analysis (LDA)
+#### Classification and Regression Trees (CART)
+#### k-Nearest Neighbors (KNN)
+#### Support Vector Machines (SVM) with a radial kernal
+#### Random Forest (RF)
+
+```{r echo=FALSE, comment=NA}
+set.seed(7)
+fit.lda <- train(Species~., data = dataset, method = "lda", metric = metric, trControl = trainControl)
+set.seed(7)
+fit.cart <- train(Species~., data = dataset, method = "rpart", metric = metric, trControl = trainControl)
+set.seed(7)
+fit.knn <- train(Species~., data = dataset, method = "knn", metric = metric, trControl = trainControl)
+set.seed(7)
+fit.svm <- train(Species~., data = dataset, method = "svmRadial", metric = metric, trControl = trainControl)
+set.seed(7)
+fit.rf <- train(Species~., data = dataset, method = "rf", metric = metric, trControl = trainControl)
+results <- resamples(list(lda = fit.lda, cart = fit.cart, knn = fit.knn, svm = fit.svm, rf = fit.rf))
+summary(results)
+dotplot(results)
+print(fit.lda)
+# estimate skill of LDA on the validation dataset
+predictionsLDA <- predict(fit.lda, validation)
+confusionMatrix(predictionsLDA, validation$Species)
 ```
