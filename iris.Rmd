@@ -14,6 +14,7 @@ library(corrplot)
 library(rcompanion)
 library(klaR)
 library(MASS)
+library(stats)
 ```
 
 ## Data Introduction
@@ -77,6 +78,11 @@ featurePlot(x = x, y = y, plot = "box")
 pairs(iris)
 # pairwise scatter plots colored by class
 pairs(Species~., data = iris, col = iris$Species)
+```
+
+## Prediction
+### Preprocess Parameters
+```{r echo=FALSE, comment=NA}
 # calculate the pre-process parameters from the dataset
 preprocessParams <- preProcess(iris[,1:4], method = c("BoxCox"))
 ```
