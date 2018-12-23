@@ -127,3 +127,5 @@ print(fit.lda)
 predictionsLDA <- predict(fit.lda, validation)
 confusionMatrix(predictionsLDA, validation$Species)
 ```
+## Conclusions
+The 2 models having the highest accuracy are LDA and KNN.
